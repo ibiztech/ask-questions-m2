@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+	<add id="Ibiztech_Askquestion::questions" title="Questions" module="Ibiztech_Askquestion" sortOrder="51" resource="Ibiztech_Askquestion::questions"/>
+	<add id="Ibiztech_Askquestion::questionslist" title="Manage Questions" module="Ibiztech_Askquestion" sortOrder="10" action="ibiztech_askquestion/question/listquestions" resource="Ibiztech_Askquestion::questionslist" parent="Ibiztech_Askquestion::questions"/>
+    </menu>
+</config>

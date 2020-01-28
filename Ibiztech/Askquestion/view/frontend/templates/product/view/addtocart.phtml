@@ -1,0 +1,128 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/** @var $block \Magento\Catalog\Block\Product\View */
+?>
+<?php $_product = $block->getProduct(); ?>
+<?php $buttonTitle = __('Add to Cart'); ?>
+<?php if ($_product->isSaleable()) :?>
+<div class="box-tocart">
+    <div class="fieldset">
+        <?php if ($block->shouldRenderQuantity()) :?>
+        <div class="field qty">
+            <label class="label" for="qty"><span><?= $block->escapeHtml(__('Qty')) ?></span></label>
+            <div class="control">
+                <input type="number"
+                       name="qty"
+                       id="qty"
+                       min="0"
+                       value="<?= $block->getProductDefaultQty() * 1 ?>"
+                       title="<?= $block->escapeHtmlAttr(__('Qty')) ?>"
+                       class="input-text qty"
+                       data-validate="<?= $block->escapeHtml(json_encode($block->getQuantityValidators())) ?>"
+                       />
+            </div>
+        </div>
+        <?php endif; ?>
+        <div class="actions">
+            <button type="submit"
+                    title="<?= $block->escapeHtmlAttr($buttonTitle) ?>"
+                    class="action primary tocart"
+                    id="product-addtocart-button" disabled>
+                <span><?= $block->escapeHtml($buttonTitle) ?></span>
+            </button>			
+            <?= $block->getChildHtml('', true) ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+<div id="askquestion">
+	<a href="#" title="Ask a Question" id="productaskquetion">
+        <span>Any queries about this product? Ask a Question to Seller</span>
+    </a>
+	<div style="display:none;" id="askquestion_form">
+        <fieldset class="fieldset" data-hasrequired="* Required Fields">
+        <!--<legend class="legend"><span>Ask Your Question Here : </legend>-->		
+        <span id="askquestion_messages">You will get reply through an email from seller.</span>
+		<br>
+        <div class="field">
+            <label for="name_field" class="label"><span>Name</span></label>
+            <div class="control">
+                <input type="text" name="name" id="name_field" class="input-text" data-validate="{required:true}" aria-required="true">
+            </div>
+		</div>
+        <div class="field">
+            <label for="email_field" class="label"><span>Email</span></label>
+            <div class="control">
+                <input type="text" name="email_field" id="email_field" class="input-text" data-validate="{required:true}" aria-required="true" placeholder="You will get reply on your email">
+            </div>
+        </div>
+		<div class="field">
+            <input type="checkbox" name="ifphone_field" id="ifphone_number" class="input-text" /> <label for="ifphone_field" class="label"><span>Want call from us?</span></label>
+        </div>
+		<div class="field" style="display:none;" id="phone_field_wrap">
+            <label for="phone_number" class="label"><span>Phone Number</span></label>
+            <div class="control">
+                <input type="text" name="phone_number" id="phone_number" class="input-text" />
+            </div>
+        </div>
+        <div class="field>
+            <label for="question_field" class="label"><span>Question</span></label>
+            <div class="control">
+                <textarea name="question" class="input-text" id="question_field" data-validate="{required:true}"  aria-required="true" ></textarea>
+            </div>
+        </div>
+    </fieldset>
+    <div class="actions-toolbar">
+        <div class="primary actions-primary">
+            <button type="button" id= "askquestion_button" class="action submit primary"><span>Submit Question</span></button>
+        </div>
+    </div>
+	</div>
+</div>
+<script>
+	require([
+			'jquery'
+		], 	function($) {$(function() {
+				$("#productaskquetion").click(function(e) {
+					e.preventDefault();
+					$("#askquestion_form").slideToggle();
+				});
+				$("#ifphone_number").click(function(e) {
+					e.preventDefault();
+					$("#phone_field_wrap").slideToggle();
+				});
+				
+				$("#askquestion_button").click(function(e) {
+					if($("#email_field").valid()) { 
+						$.ajax({
+						  method: "POST",
+						  url: "<?php echo $this->getUrl("askquestion/question/ask");?>",
+						  data: { name: $("#name_field").val(), product_sku:'<?php echo $_product->getSku()?>', email: $("#email_field").val(), phone_number: $("#phone_number").val(), question:$("#question_field").val() }
+						})
+						.done(function( msg ) {							
+							$("#askquestion_messages").html(msg);
+							$("#name_field").val('');		
+							$("#email_field").val('');
+							$("#question_field").val('');
+						});
+					}
+				});
+			});
+	});
+</script>
+<style>
+a#productaskquetion {
+    width: 100%;    
+    display: block;
+    font-size: 15px;font-weight: 700;
+}
+div#askquestion {
+    margin: 10px 0 40px;
+	box-shadow: 1px 1px 3px 1px #ccc;
+    padding: 20px;
+}
+</style>
